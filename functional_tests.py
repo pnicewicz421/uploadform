@@ -10,12 +10,9 @@ class NewVisitorTest(unittest.TestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def test_start_browser(self):
-        #Emilka finally has her own issue tracker. She goes to check out the homepage
-        self.browser.get('http://localhost:8000')
-        
     def test_right_title(self):
         #Of course, let's make sure that Issue Tracker apperas in the title.
+        self.browser.get('http://localhost:8000')
         self.assertIn('Issue Tracker', self.browser.title)
         self.fail('Finish the test!')
         
