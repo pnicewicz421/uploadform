@@ -18,10 +18,10 @@ class NewVisitorTest(unittest.TestCase):
         
         #Then, we will make sure that there's a header with that information
         header_text = self.browser.find_element_by_tag_name('h1').text
-        self.assertIn('Issue Tracker', header_text)
+        self.assertIn('My Issue Tracker', header_text)
         
         #She sees a table with headers labeled: 
-        table = self.browser.find_element_by_tag_id('id_table')
+        table = self.browser.find_element_by_id('id_table')
         headers = table.find_elements_by_tag_name('th')
         
         #   - Date (date field)
@@ -29,12 +29,11 @@ class NewVisitorTest(unittest.TestCase):
         #   - Location (text field; 50 chars max)
         #   - Youth Name (text field; 50 chars max)
         #   - Notes (text field; 500 chars max)
-        self.assertTrue(
-            any(header.text == 'Date' for header in headers),
-            any(header.text == 'Location' for header in headers),
-            any(header.text == 'Youth Name' for header in headers),
-            any(header.text == 'Notes' for header in headers)
-        )
+        self.assertTrue(any(header.text == 'Date' for header in headers))
+        self.assertTrue(any(header.text == 'Time' for header in headers))
+        self.assertTrue(any(header.text == 'Location' for header in headers))
+        self.assertTrue(any(header.text == 'Youth Name' for header in headers))
+        self.assertTrue(any(header.text == 'Notes' for header in headers))
         
         #She also sees blank fields below the header ready to populate the table
         inputDate = self.browser.find_element_by_id('id_date')
@@ -73,13 +72,11 @@ class NewVisitorTest(unittest.TestCase):
         #The first case now appears in the table
         # Test to make sure info was submitted 
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(
-            any(row.text == b'<td>%s</td>' % dateText for row in rows),
-            any(row.text == b'<td>%s</td>' % timeText for row in rows),
-            any(row.text == b'<td>%s</td>' % locationText for row in rows),
-            any(row.text == b'<td>%s</td>' % youthNameText for row in rows),
-            any(row.text == b'<td>%s</td>' % notesText for row in rows)
-        )
+        self.assertTrue(any(row.text == '<td>%s</td>' % dateText for row in rows))
+        self.assertTrue(any(row.text == '<td>%s</td>' % timeText for row in rows))
+        self.assertTrue(any(row.text == '<td>%s</td>' % locationText for row in rows))
+        self.assertTrue(any(row.text == '<td>%s</td>' % youthNameText for row in rows))
+        self.assertTrue(any(row.text == '<td>%s</td>' % notesText for row in rows))
         
         self.fail('Finish the test')
 
