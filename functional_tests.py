@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 import unittest
 
 class NewVisitorTest(unittest.TestCase):
@@ -11,34 +12,76 @@ class NewVisitorTest(unittest.TestCase):
         self.browser.quit()
 
     def test_right_title(self):
-        #Of course, let's make sure that Issue Tracker apperas in the title.
+        #Of course, let's make sure that Issue Tracker appears in the title.
         self.browser.get('http://localhost:8000')
         self.assertIn('Issue Tracker', self.browser.title)
-        self.fail('Finish the test!')
         
-#She sees a table with headers labeled: 
-#   - Date (date field)
-#   - Time (date field)
-#   - Location (text field; 50 chars max)
-#   - Youth Name (text field; 50 chars max)
-#   - Notes (text field; 500 chars max)
+        #Then, we will make sure that there's a header with that information
+        header_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn('Issue Tracker', header_text)
+        
+        #She sees a table with headers labeled: 
+        table = self.browser.find_element_by_tag_id('id_table')
+        headers = table.find_elements_by_tag_name('th')
+        
+        #   - Date (date field)
+        #   - Time (date field)
+        #   - Location (text field; 50 chars max)
+        #   - Youth Name (text field; 50 chars max)
+        #   - Notes (text field; 500 chars max)
+        self.assertTrue(
+            any(header.text == 'Date' for header in headers),
+            any(header.text == 'Location' for header in headers),
+            any(header.text == 'Youth Name' for header in headers),
+            any(header.text == 'Notes' for header in headers)
+        )
+        
+        #She also sees blank fields below the header ready to populate the table
+        inputDate = self.browser.find_element_by_id('id_date')
+        inputTime = self.browser.find_element_by_id('id_time')
+        inputLocation = self.browser.find_element_by_id('id_location')
+        inputYouthName = self.browser.find_element_by_id('id_youth_name')
+        inputNotes = self.browser.find_element_by_id('id_notes')
+        
+        # She types in her first case:
+        #   - Date: 11/21/2015
+        #   - Time: 2:37 PM EST
+        #   - Location: Woodberry Park
+        #   - Youth Name: Grazyna Kwiatkowska
+        #   - Notes: Grazyna came crying after her cajun-style grilled cheese sandwich
+        #   - with red peppers and stuffed portabello mushrooms turned out 
+        #   - slightly burnt. New grilled cheese was issued. Issue resolved.'
+        dateText = '11/21/2015'
+        timeText = '2:37 PM EST'
+        locationText = 'Woodberry Park'
+        youthNameText = 'Grazyna Kwiatkowska'
+        notesText = '''
+        Grazyna came crying after her cajun-style grilled cheese sandwich 
+        with red peppers and stuffed portabello mushroom turned out slightly
+        burnt. New grilled cheese was issued. Issue resolved.
+        '''
+        inputDate.send_keys(dateText)
+        inputTime.send_keys(timeText)
+        inputLocation.send_keys(locationText)
+        inputYouthName.send_keys(youthNameText)
+        inputNotes.send_keys(notesText)
+        
+        # For now she types in enter in the notes box to send the information
+        # Later, there will be a submit button once we get to forms
+        inputNotes.send_keys(Keys.ENTER)
 
-#She also sees blank fields below the header ready to populate the table
-
-#She sees a submit button
-
-#She types in her first case:
-#   - Date: 11/21/2015
-#   - Time: 2:37 PM EST
-#   - Location: Woodberry Park
-#   - Youth Name: Grazyna Kwiatkowska
-#   - Notes: Grazyna came crying after her cajun-style grilled cheese sandwich
-#   - with red peppers and stuffed portabello mushrooms turned out 
-#   - slightly burnt. New grilled cheese was issued. Issue resolved. 
-
-#She clicks the submit button
-
-#The first case now appears in the table
+        #The first case now appears in the table
+        # Test to make sure info was submitted 
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertTrue(
+            any(row.text == b'<td>%s</td>' % dateText for row in rows),
+            any(row.text == b'<td>%s</td>' % timeText for row in rows),
+            any(row.text == b'<td>%s</td>' % locationText for row in rows),
+            any(row.text == b'<td>%s</td>' % youthNameText for row in rows),
+            any(row.text == b'<td>%s</td>' % notesText for row in rows)
+        )
+        
+        self.fail('Finish the test')
 
 #Done for now
 
