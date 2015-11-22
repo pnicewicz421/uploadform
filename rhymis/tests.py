@@ -1,4 +1,5 @@
 from django.core.urlresolvers import resolve
+from django.template.loader import render_to_string
 from django.test import TestCase
 from django.http import HttpRequest
 
@@ -14,7 +15,10 @@ class index_viewTest(TestCase):
     def test_index_view_returns_correct_html(self):
         request = HttpRequest()
         response = index_view(request)
-        self.assertTrue(response.content.startswith(b'<html>'))
-        self.assertIn(b'<title>Issue Tracker</title>', response.content)
-        self.assertTrue(response.content.endswith(b'</html>'))
+        expected_html = render_to_string('index.html')
+        self.assertEqual(response.content.decode(), expected_html)
+        
+        #self.assertTrue(response.content.startswith(b'<html>'))
+        #self.assertIn(b'<title>Issue Tracker</title>', response.content)
+        #self.assertTrue(response.content.endswith(b'</html>'))
         
