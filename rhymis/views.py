@@ -3,4 +3,6 @@ from django.http import HttpResponse
 
 # Create your views here.
 def index_view(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html', {
+        'notes_text': request.POST.get('notes_text', '')
+    })

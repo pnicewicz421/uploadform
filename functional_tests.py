@@ -1,6 +1,7 @@
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+#from selenium.webdriver.common.keys import Keys
 import unittest
+#import time
 
 class NewVisitorTest(unittest.TestCase):
     
@@ -42,6 +43,8 @@ class NewVisitorTest(unittest.TestCase):
         inputYouthName = self.browser.find_element_by_id('id_youth_name')
         inputNotes = self.browser.find_element_by_id('id_notes')
         
+        submitButton = self.browser.find_element_by_id('id_submit')
+        
         # She types in her first case:
         #   - Date: 11/21/2015
         #   - Time: 2:37 PM EST
@@ -54,25 +57,29 @@ class NewVisitorTest(unittest.TestCase):
         timeText = '2:37 PM EST'
         locationText = 'Woodberry Park'
         youthNameText = 'Grazyna Kwiatkowska'
-        notesText = '''
-        Grazyna came crying after her cajun-style grilled cheese sandwich 
-        with red peppers and stuffed portabello mushroom turned out slightly
-        burnt. New grilled cheese was issued. Issue resolved.
-        '''
+        notesText = 'Testing notes'
+       # Grazyna came crying after her cajun-style grilled cheese sandwich 
+        #with red peppers and stuffed portabello mushroom turned out slightly
+        #burnt. New grilled cheese was issued. Issue resolved.
+        #'''
         inputDate.send_keys(dateText)
         inputTime.send_keys(timeText)
         inputLocation.send_keys(locationText)
         inputYouthName.send_keys(youthNameText)
         inputNotes.send_keys(notesText)
-        
+
         # For now she types in enter in the notes box to send the information
         # Later, there will be a submit button once we get to forms
-        inputNotes.send_keys(Keys.ENTER)
+
+        submitButton.click()
 
         #The first case now appears in the table
         # Test to make sure info was submitted 
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(any(row.text == '<td>%s</td>' % dateText for row in rows))
+        self.assertTrue(
+        any(row.text == '<td>%s</td>' % dateText for row in rows), 
+        "New date did not appear in table"
+        )
         self.assertTrue(any(row.text == '<td>%s</td>' % timeText for row in rows))
         self.assertTrue(any(row.text == '<td>%s</td>' % locationText for row in rows))
         self.assertTrue(any(row.text == '<td>%s</td>' % youthNameText for row in rows))

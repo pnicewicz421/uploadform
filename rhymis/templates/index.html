@@ -13,11 +13,18 @@
                 <th>Notes</th>
             </tr>
             <tr>
-                <td><input id="id_date" /></td>
-                <td><input id="id_time" /></td>
-                <td><input id="id_location" /></td>
-                <td><input id="id_youth_name" /></td>
-                <td><input id="id_notes" /></td>
+                <form method="POST">
+                <td><input name="date_text" id="id_date" /></td>
+                <td><input name="time_text" id="id_time" /></td>
+                <td><input name="location_text" id="id_location" /></td>
+                <td><input name="youth_name_text" id="id_youth_name" /></td>
+                <td><input name="notes_text" id="id_notes" /></td>
+                <td><input type="submit" value="Submit" id="id_submit" /></td>
+                {% csrf_token %}
+                </form>
+            </tr>
+            <tr>
+                <td>{{ notes_text }}</td>
             </tr>
         </table>
     </body>
