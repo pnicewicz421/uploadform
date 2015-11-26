@@ -1,7 +1,7 @@
 from selenium import webdriver
 #from selenium.webdriver.common.keys import Keys
 import unittest
-#import time
+import time
 
 class NewVisitorTest(unittest.TestCase):
     
@@ -72,19 +72,19 @@ class NewVisitorTest(unittest.TestCase):
         # Later, there will be a submit button once we get to forms
 
         submitButton.click()
+        time.sleep(1)
 
         #The first case now appears in the table
         # Test to make sure info was submitted 
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(
-        any(row.text == '<td>%s</td>' % dateText for row in rows), 
-        "New date did not appear in table"
-        )
-        self.assertTrue(any(row.text == '<td>%s</td>' % timeText for row in rows))
-        self.assertTrue(any(row.text == '<td>%s</td>' % locationText for row in rows))
-        self.assertTrue(any(row.text == '<td>%s</td>' % youthNameText for row in rows))
-        self.assertTrue(any(row.text == '<td>%s</td>' % notesText for row in rows))
-        
+        table = self.browser.find_element_by_id('id_table')
+        rows = table.find_elements_by_tag_name('td')
+
+        self.assertIn(dateText, [row.text for row in rows])
+        self.assertIn(timeText, [row.text for row in rows])
+        self.assertIn(locationText, [row.text for row in rows])
+        self.assertIn(youthNameText, [row.text for row in rows])
+        self.assertIn(notesText, [row.text for row in rows])
+    
         self.fail('Finish the test')
 
 #Done for now

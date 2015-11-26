@@ -25,18 +25,28 @@ class index_viewTest(TestCase):
     def test_index_view_processes_POST_request(self):
         request = HttpRequest()
         request.method = 'POST'
-        notesText = '''
-        Grazyna came crying after her cajun-style grilled cheese sandwich 
-        with red peppers and stuffed portabello mushroom turned out slightly
-        burnt. New grilled cheese was issued. Issue resolved.
-        '''
+        
+        dateText = '11/21/2015'
+        timeText = '2:37 PM EST'
+        locationText = 'Woodberry Park'
+        youthNameText = 'Grazyna Kwiatkowska'
+        notesText = 'Testing notes'
+        
+        request.POST['date_text'] = dateText
+        request.POST['time_text'] = timeText
+        request.POST['location_text'] = locationText
+        request.POST['youth_name_text'] = youthNameText
         request.POST['notes_text'] = notesText 
         response = index_view(request)
         self.assertIn(notesText, response.content.decode())
         
         expected_html = render_to_string(
             'index.html', 
-            {'notes_text': notesText}
+            {'date_text': dateText,
+            'time_text': timeText,
+            'location_text': locationText,
+            'youth_name_text': youthNameText,
+            'notes_text': notesText}
         )
         self.assertEqual(response.content.decode(), expected_html)
         
