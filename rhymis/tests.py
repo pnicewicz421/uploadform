@@ -3,6 +3,8 @@ from django.template.loader import render_to_string
 from django.test import TestCase
 from django.http import HttpRequest
 
+from rhymis.models import Record
+
 from .views import index_view
 
 # Create your tests here.
@@ -49,5 +51,33 @@ class index_viewTest(TestCase):
             'notes_text': notesText}
         )
         self.assertEqual(response.content.decode(), expected_html)
+        
+class ModelTest(TestCase):
+    
+    def test_save_and_retrieve(self):
+        first_record = Record()
+        first_record.dateText = '11/26/2015'
+        first_record.timeText = '3:32 PM EST'
+        first_record.locationText = 'Franconia'
+        first_record.youthNameText = 'Oscar Peterson'
+        first_record.notesText = 'OP was the OG even before the term was coined'
+        first_record.save()
+        
+        second_record = Record()
+        second_record.dateText = '1/25/1967'
+        second_record.timeText = '3:41 AM UTC'
+        second_record.locationText = 'Reykjavik'
+        second_record.youthNameText = 'Olaf the Hippie'
+        second_record.notesText = 'Made up viking hippie. Is that a thing'
+        second_record.save()
+        
+        saved_items = Record.objects.all()
+        self.assertEqual(saved_items.count(), 2)
+        
+        first_saved_item = saved_items[0]
+        second_saved_item = saved_items[1]
+        
+        self.assertEqual(first_saved_item.notesText, 'OP was the OG even before the term was coined')
+        self.assertEqual(second_saved_item.notesText, 'Made up viking hippie. Is that a thing')
         
         

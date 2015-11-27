@@ -11,6 +11,26 @@ class NewVisitorTest(unittest.TestCase):
         
     def tearDown(self):
         self.browser.quit()
+        
+    def check_for_row_in_table(self, row_text):
+        #Since I don't want to keep writing out the variables
+        #names every time, row_text will be a list of variable items
+        
+        dateText = row_text[0]
+        timeText = row_text[1]
+        locationText = row_text[2]
+        youthNameText = row_text[3]
+        notesText = row_text[4]
+        
+        table = self.browser.find_element_by_id('id_table')
+        rows = table.find_elements_by_tag_name('td')
+
+        self.assertIn(dateText, [row.text for row in rows])
+        self.assertIn(timeText, [row.text for row in rows])
+        self.assertIn(locationText, [row.text for row in rows])
+        self.assertIn(youthNameText, [row.text for row in rows])
+        self.assertIn(notesText, [row.text for row in rows])
+        
 
     def test_right_title(self):
         #Of course, let's make sure that Issue Tracker appears in the title.
@@ -58,6 +78,9 @@ class NewVisitorTest(unittest.TestCase):
         locationText = 'Woodberry Park'
         youthNameText = 'Grazyna Kwiatkowska'
         notesText = 'Testing notes'
+        
+        row_text = [dateText, timeText, locationText, youthNameText, notesText]
+        
        # Grazyna came crying after her cajun-style grilled cheese sandwich 
         #with red peppers and stuffed portabello mushroom turned out slightly
         #burnt. New grilled cheese was issued. Issue resolved.
@@ -76,17 +99,10 @@ class NewVisitorTest(unittest.TestCase):
 
         #The first case now appears in the table
         # Test to make sure info was submitted 
-        table = self.browser.find_element_by_id('id_table')
-        rows = table.find_elements_by_tag_name('td')
-
-        self.assertIn(dateText, [row.text for row in rows])
-        self.assertIn(timeText, [row.text for row in rows])
-        self.assertIn(locationText, [row.text for row in rows])
-        self.assertIn(youthNameText, [row.text for row in rows])
-        self.assertIn(notesText, [row.text for row in rows])
-    
+        self.check_for_row_in_table(row_text)
+        
         self.fail('Finish the test')
-
+        
 #Done for now
 
 if __name__ == '__main__':
