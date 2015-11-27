@@ -3,6 +3,8 @@ from django.template.loader import render_to_string
 from django.test import TestCase
 from django.http import HttpRequest
 
+import datetime
+
 from rhymis.models import Record
 
 from .views import index_view
@@ -52,20 +54,28 @@ class index_viewTest(TestCase):
         )
         self.assertEqual(response.content.decode(), expected_html)
         
+class GMT5(datetime.tzinfo):
+    def utcoffset(self, dt):
+        return datetime.timedelta(hours=5)
+    def dst(self, dt):
+        return datetime.timedelta(0)
+
 class ModelTest(TestCase):
     
     def test_save_and_retrieve(self):
+        gmt5 = GMT5()
+        
         first_record = Record()
-        first_record.dateText = '11/26/2015'
-        first_record.timeText = '3:32 PM EST'
-        first_record.locationText = 'Franconia'
+        first_record.datetimeText = datetime.datetime(2015, 11, 26, 15, 32, tzinfo=gmt5)
+        #first_record.timeText = datetime.time(15, 32) #EST
+        first_record.locationText = 'OT'
         first_record.youthNameText = 'Oscar Peterson'
         first_record.notesText = 'OP was the OG even before the term was coined'
         first_record.save()
         
         second_record = Record()
-        second_record.dateText = '1/25/1967'
-        second_record.timeText = '3:41 AM UTC'
+        second_record.datetimeText = datetime.datetime(1967, 1, 25, 3, 41, tzinfo=gmt5)
+        #second_record.timeText = datetime.time(3, 41) #UTC
         second_record.locationText = 'Reykjavik'
         second_record.youthNameText = 'Olaf the Hippie'
         second_record.notesText = 'Made up viking hippie. Is that a thing'
@@ -77,7 +87,12 @@ class ModelTest(TestCase):
         first_saved_item = saved_items[0]
         second_saved_item = saved_items[1]
         
+        self.assertEqual(first_saved_item.datetimeText, datetime.datetime(2015, 11, 26,15, 32, tzinfo=gmt5))
+        self.assertEqual(first_saved_item.locationText, 'OT')
+        self.assertEqual(first_saved_item.youthNameText, 'Oscar Peterson')
         self.assertEqual(first_saved_item.notesText, 'OP was the OG even before the term was coined')
+        
+        self.assertEqual(second_saved_item.datetimeText, datetime.datetime(1967, 1, 25, 3, 41, tzinfo=gmt5))
+        self.assertEqual(second_saved_item.locationText, 'Reykjavik')
+        self.assertEqual(second_saved_item.youthNameText, 'Olaf the Hippie')
         self.assertEqual(second_saved_item.notesText, 'Made up viking hippie. Is that a thing')
-        
-        
