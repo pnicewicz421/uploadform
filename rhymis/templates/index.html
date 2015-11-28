@@ -7,15 +7,21 @@
         <table id="id_table">
             <tr>
                 <th>Date</th>
-                <th>Time</th>
                 <th>Location</th>
                 <th>Youth Name</th>
                 <th>Notes</th>
             </tr>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.datetimeText }}</td>
+                <td>{{ record.locationText }}</td>
+                <td>{{ record.youthNameText }}</td>
+                <td>{{ record.notesText }}</td>
+            </tr>
+            {% endfor %}
             <tr>
                 <form method="POST">
-                <td><input name="date_text" id="id_date" /></td>
-                <td><input name="time_text" id="id_time" /></td>
+                <td><input name="date_time_text" id="id_date_time" /></td>
                 <td><input name="location_text" id="id_location" /></td>
                 <td><input name="youth_name_text" id="id_youth_name" /></td>
                 <td><input name="notes_text" id="id_notes" /></td>
@@ -23,13 +29,7 @@
                 {% csrf_token %}
                 </form>
             </tr>
-            <tr>
-                <td>{{ date_text }}</td>
-                <td>{{ time_text }}</td>
-                <td>{{ location_text }}</td>
-                <td>{{ youth_name_text }}</td>
-                <td>{{ notes_text }}</td>
-            </tr>
+
         </table>
     </body>
 </html>

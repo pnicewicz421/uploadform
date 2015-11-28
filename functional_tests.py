@@ -1,7 +1,9 @@
 from selenium import webdriver
 #from selenium.webdriver.common.keys import Keys
+
 import unittest
 import time
+import datetime
 
 class NewVisitorTest(unittest.TestCase):
     
@@ -16,17 +18,15 @@ class NewVisitorTest(unittest.TestCase):
         #Since I don't want to keep writing out the variables
         #names every time, row_text will be a list of variable items
         
-        dateText = row_text[0]
-        timeText = row_text[1]
-        locationText = row_text[2]
-        youthNameText = row_text[3]
-        notesText = row_text[4]
+        dateTimeText = row_text[0]
+        locationText = row_text[1]
+        youthNameText = row_text[2]
+        notesText = row_text[3]
         
         table = self.browser.find_element_by_id('id_table')
         rows = table.find_elements_by_tag_name('td')
 
-        self.assertIn(dateText, [row.text for row in rows])
-        self.assertIn(timeText, [row.text for row in rows])
+        #self.assertEqual(time.strftime(dateTimeText, '%Y-%m-%dT%H:%M:%S'), time.strptime(rows[0].text, '%Y-%m-%dT%H:%M:%S'))
         self.assertIn(locationText, [row.text for row in rows])
         self.assertIn(youthNameText, [row.text for row in rows])
         self.assertIn(notesText, [row.text for row in rows])
@@ -51,19 +51,20 @@ class NewVisitorTest(unittest.TestCase):
         #   - Youth Name (text field; 50 chars max)
         #   - Notes (text field; 500 chars max)
         self.assertTrue(any(header.text == 'Date' for header in headers))
-        self.assertTrue(any(header.text == 'Time' for header in headers))
         self.assertTrue(any(header.text == 'Location' for header in headers))
         self.assertTrue(any(header.text == 'Youth Name' for header in headers))
         self.assertTrue(any(header.text == 'Notes' for header in headers))
         
         #She also sees blank fields below the header ready to populate the table
-        inputDate = self.browser.find_element_by_id('id_date')
-        inputTime = self.browser.find_element_by_id('id_time')
+        inputDateTime = self.browser.find_element_by_id('id_date_time')
         inputLocation = self.browser.find_element_by_id('id_location')
         inputYouthName = self.browser.find_element_by_id('id_youth_name')
         inputNotes = self.browser.find_element_by_id('id_notes')
         
         submitButton = self.browser.find_element_by_id('id_submit')
+        
+        
+        gmt5 = GMT5()
         
         # She types in her first case:
         #   - Date: 11/21/2015
@@ -73,20 +74,21 @@ class NewVisitorTest(unittest.TestCase):
         #   - Notes: Grazyna came crying after her cajun-style grilled cheese sandwich
         #   - with red peppers and stuffed portabello mushrooms turned out 
         #   - slightly burnt. New grilled cheese was issued. Issue resolved.'
-        dateText = '11/21/2015'
-        timeText = '2:37 PM EST'
+        dateTimeText = datetime.datetime(2015, 11, 21, 15, 21, tzinfo=gmt5)
         locationText = 'Woodberry Park'
         youthNameText = 'Grazyna Kwiatkowska'
         notesText = 'Testing notes'
         
-        row_text = [dateText, timeText, locationText, youthNameText, notesText]
+        row_text = [str(dateTimeText), locationText, youthNameText, notesText]
         
        # Grazyna came crying after her cajun-style grilled cheese sandwich 
         #with red peppers and stuffed portabello mushroom turned out slightly
         #burnt. New grilled cheese was issued. Issue resolved.
         #'''
-        inputDate.send_keys(dateText)
-        inputTime.send_keys(timeText)
+        
+        # Convert to this format 'Nov. 21, 2015, 10:21 a.m.'
+
+        inputDateTime.send_keys(str(dateTimeText))
         inputLocation.send_keys(locationText)
         inputYouthName.send_keys(youthNameText)
         inputNotes.send_keys(notesText)
@@ -104,6 +106,11 @@ class NewVisitorTest(unittest.TestCase):
         self.fail('Finish the test')
         
 #Done for now
+class GMT5(datetime.tzinfo):
+    def utcoffset(self, dt):
+        return datetime.timedelta(hours=5)
+    def dst(self, dt):
+        return datetime.timedelta(0)
 
 if __name__ == '__main__':
     unittest.main() #warnings='ignore')
