@@ -1,11 +1,13 @@
 from selenium import webdriver
+from django.test import LiveServerTestCase
+
 #from selenium.webdriver.common.keys import Keys
 
 import unittest
 import time
 import datetime
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
     
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -34,7 +36,7 @@ class NewVisitorTest(unittest.TestCase):
 
     def test_right_title(self):
         #Of course, let's make sure that Issue Tracker appears in the title.
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
         self.assertIn('Issue Tracker', self.browser.title)
         
         #Then, we will make sure that there's a header with that information
@@ -97,11 +99,55 @@ class NewVisitorTest(unittest.TestCase):
         # Later, there will be a submit button once we get to forms
 
         submitButton.click()
+        
+        user1_list_url = self.browser.current_url
+        self.assertRegex(user1_list_url, '/records/.+', 'Actual url was %s' % user1_list_url)
+        
         time.sleep(1)
 
         #The first case now appears in the table
         # Test to make sure info was submitted 
         self.check_for_row_in_table(row_text)
+        
+        #Second user comes along
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+        
+        self.browser.get(self.browser.live_server_url)
+        body_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn(locationText, body_text)
+        self.assertNotIn(youthNameText, body_text)
+        self.assertNotIn(notesText, body_text)
+        
+        dateTimeText = datetime.datetime(2013, 5, 4, 14, 21, tzinfo=gmt5)
+        locationText = 'OLQP'
+        youthNameText = 'Emilka and Przemek'
+        notesText = 'Most beautiful day ever'
+        
+        row_text = [str(dateTimeText), locationText, youthNameText, notesText]
+        
+       # Grazyna came crying after her cajun-style grilled cheese sandwich 
+        #with red peppers and stuffed portabello mushroom turned out slightly
+        #burnt. New grilled cheese was issued. Issue resolved.
+        #'''
+        
+        # Convert to this format 'Nov. 21, 2015, 10:21 a.m.'
+
+        inputDateTime.send_keys(str(dateTimeText))
+        inputLocation.send_keys(locationText)
+        inputYouthName.send_keys(youthNameText)
+        inputNotes.send_keys(notesText)
+
+        # For now she types in enter in the notes box to send the information
+        # Later, there will be a submit button once we get to forms
+
+        submitButton.click()
+        
+        self.check_for_row_in_table(row_text)
+        
+        user2_list_url = self.browser.current_url
+        self.assertRegex(user2_list_url, '/records/.+', 'Actual url was %s' % user2_list_url)
+        self.assertNotEqual(user2_list_url, user1_list_url)
         
         self.fail('Finish the test')
         
@@ -111,9 +157,3 @@ class GMT5(datetime.tzinfo):
         return datetime.timedelta(hours=5)
     def dst(self, dt):
         return datetime.timedelta(0)
-
-if __name__ == '__main__':
-    unittest.main() #warnings='ignore')
-
-
-
