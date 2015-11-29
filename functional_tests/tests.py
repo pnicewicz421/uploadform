@@ -68,14 +68,6 @@ class NewVisitorTest(LiveServerTestCase):
         
         gmt5 = GMT5()
         
-        # She types in her first case:
-        #   - Date: 11/21/2015
-        #   - Time: 2:37 PM EST
-        #   - Location: Woodberry Park
-        #   - Youth Name: Grazyna Kwiatkowska
-        #   - Notes: Grazyna came crying after her cajun-style grilled cheese sandwich
-        #   - with red peppers and stuffed portabello mushrooms turned out 
-        #   - slightly burnt. New grilled cheese was issued. Issue resolved.'
         dateTimeText = datetime.datetime(2015, 11, 21, 15, 21, tzinfo=gmt5)
         locationText = 'Woodberry Park'
         youthNameText = 'Grazyna Kwiatkowska'
@@ -88,8 +80,6 @@ class NewVisitorTest(LiveServerTestCase):
         #burnt. New grilled cheese was issued. Issue resolved.
         #'''
         
-        # Convert to this format 'Nov. 21, 2015, 10:21 a.m.'
-
         inputDateTime.send_keys(str(dateTimeText))
         inputLocation.send_keys(locationText)
         inputYouthName.send_keys(youthNameText)
@@ -109,11 +99,33 @@ class NewVisitorTest(LiveServerTestCase):
         # Test to make sure info was submitted 
         self.check_for_row_in_table(row_text)
         
+        #Test second item -- see need for refactor?
+        inputDateTime = self.browser.find_element_by_id('id_date_time')
+        inputLocation = self.browser.find_element_by_id('id_location')
+        inputYouthName = self.browser.find_element_by_id('id_youth_name')
+        inputNotes = self.browser.find_element_by_id('id_notes')
+        
+        submitButton = self.browser.find_element_by_id('id_submit')
+        dateTimeText = datetime.datetime(2020, 12, 31, 23, 1, tzinfo=gmt5)
+        locationText = 'The Beach'
+        youthNameText = 'No Homeless Youth'
+        notesText = 'Happy New Year'
+        inputDateTime.send_keys(str(dateTimeText))
+        inputLocation.send_keys(locationText)
+        inputYouthName.send_keys(youthNameText)
+        inputNotes.send_keys(notesText)
+        submitButton.click()
+        
+        time.sleep(1)
+        
+        row_text = [str(dateTimeText), locationText, youthNameText, notesText]
+        self.check_for_row_in_table(row_text)
+        
         #Second user comes along
         self.browser.quit()
         self.browser = webdriver.Firefox()
         
-        self.browser.get(self.browser.live_server_url)
+        self.browser.get(self.live_server_url)
         body_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn(locationText, body_text)
         self.assertNotIn(youthNameText, body_text)

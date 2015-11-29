@@ -5,7 +5,7 @@ from django.http import HttpRequest
 
 import datetime
 
-from rhymis.models import Record
+from rhymis.models import Record, RecordNumber
 
 from .views import index_view
 
@@ -27,17 +27,31 @@ class index_viewTest(TestCase):
         
         self.assertEqual(response.content.decode(), expected_html)
         
-        #self.assertTrue(response.content.startswith(b'<html>'))
-        #self.assertIn(b'<title>Issue Tracker</title>', response.content)
-        #self.assertTrue(response.content.endswith(b'</html>'))
-        
     def test_index_view_does_not_save_blank_entries(self):
         request = HttpRequest()
         index_view(request)
         self.assertEqual(Record.objects.count(), 0)
         
-
+class change_recordsTest(TestCase):
+    def test_index_view_with_multiple_items(self):
+        gmt5 = GMT5()
+        record_number = RecordNumber()
+        record_number.save()
     
+        locationText1 = 'Home'
+        locationText2 = 'Washington'
+        
+        Record.objects.create(datetimeText=datetime.datetime(2015, 1, 23, 4, 56, tzinfo=gmt5), locationText='Home', youthNameText='Monty Python', notesText='The notes are here', recordNumberText=record_number)
+        Record.objects.create(datetimeText=datetime.datetime(2016, 11, 15, 23, 1, tzinfo=gmt5), locationText='Washington', youthNameText='White House', notesText='Bad News', recordNumberText=record_number)
+    
+        response = self.client.get('/records/list-identifier/')
+        
+        print (response)
+        
+        self.assertContains(response, locationText1)
+        self.assertContains(response, locationText2)
+        
+class NewRecordTest(TestCase):
     def prep_POST_request(self):
         gmt5 = GMT5()
         
@@ -57,7 +71,6 @@ class index_viewTest(TestCase):
         response = index_view(request)
         return response
 
-        
     def test_index_view_processes_POST_request(self):
         #Check to make sure POST request saved in database
         self.prep_POST_request()
@@ -74,58 +87,28 @@ class index_viewTest(TestCase):
         self.assertEqual(new_record.locationText, locationText)
         self.assertEqual(new_record.youthNameText, youthNameText)
         self.assertEqual(new_record.notesText, notesText)
+
     
     def test_index_view_redirects_after_POST_request(self):        
         response = self.prep_POST_request()
         
         self.assertEqual(response.status_code, 302) #check for redirect
-        self.assertEqual(response['location'], '/')
-        
-        ###
-        #self.assertIn(notesText, response.content.decode())
-        #self.assertIn(str(datetimeText), response.content.decode())
-        #self.assertIn(locationText, response.content.decode())
-        #self.assertIn(youthNameText, response.content.decode())
-        
-        #expected_html = render_to_string(
-        #    'index.html', 
-        #    {'date_time_text': str(datetimeText),
-        #    'location_text': locationText,
-        #    'youth_name_text': youthNameText,
-        #    'notes_text': notesText}
-        #)
-        
-        #self.assertEqual(response.content.decode(), expected_html)
-        ###
-        
-    def test_index_view_with_multiple_items(self):
-        gmt5 = GMT5()
-    
-        locationText1 = 'Home'
-        locationText2 = 'Washington'
-        
-        Record.objects.create(datetimeText=datetime.datetime(2015, 1, 23, 4, 56, tzinfo=gmt5), locationText='Home', youthNameText='Monty Python', notesText='The notes are here')
-        Record.objects.create(datetimeText=datetime.datetime(2016, 11, 15, 23, 1, tzinfo=gmt5), locationText='Washington', youthNameText='White House', notesText='Bad News')
-        
-        request = HttpRequest()
-        response = index_view(request)
-        
-        print (response.content.decode())
-        
-        self.assertIn(locationText1, response.content.decode())
-        self.assertIn(locationText2, response.content.decode())
-        
+        self.assertEqual(response['location'], '/records/list-identifier/')
+
 class GMT5(datetime.tzinfo):
     def utcoffset(self, dt):
         return datetime.timedelta(hours=5)
+        
     def dst(self, dt):
         return datetime.timedelta(0)
     
-
-class ModelTest(TestCase):
+class RecordandRecordNumberModelTest(TestCase):
     
     def test_save_and_retrieve(self):
         gmt5 = GMT5()
+        
+        record_number=RecordNumber()
+        record_number.save()
         
         first_record = Record()
         first_record.datetimeText = datetime.datetime(2015, 11, 26, 15, 32, tzinfo=gmt5)
@@ -133,6 +116,7 @@ class ModelTest(TestCase):
         first_record.locationText = 'OT'
         first_record.youthNameText = 'Oscar Peterson'
         first_record.notesText = 'OP was the OG even before the term was coined'
+        first_record.recordNumberText = record_number
         first_record.save()
         
         second_record = Record()
@@ -141,7 +125,11 @@ class ModelTest(TestCase):
         second_record.locationText = 'Reykjavik'
         second_record.youthNameText = 'Olaf the Hippie'
         second_record.notesText = 'Made up viking hippie. Is that a thing'
+        second_record.recordNumberText = record_number
         second_record.save()
+        
+        saved_records = RecordNumber.objects.first()
+        self.assertEqual(saved_records, record_number)
         
         saved_items = Record.objects.all()
         self.assertEqual(saved_items.count(), 2)
@@ -153,8 +141,10 @@ class ModelTest(TestCase):
         self.assertEqual(first_saved_item.locationText, 'OT')
         self.assertEqual(first_saved_item.youthNameText, 'Oscar Peterson')
         self.assertEqual(first_saved_item.notesText, 'OP was the OG even before the term was coined')
+        self.assertEqual(first_saved_item.recordNumberText, record_number)
         
         self.assertEqual(second_saved_item.datetimeText, datetime.datetime(1967, 1, 25, 3, 41, tzinfo=gmt5))
         self.assertEqual(second_saved_item.locationText, 'Reykjavik')
         self.assertEqual(second_saved_item.youthNameText, 'Olaf the Hippie')
         self.assertEqual(second_saved_item.notesText, 'Made up viking hippie. Is that a thing')
+        self.assertEqual(second_saved_item.recordNumberText, record_number)

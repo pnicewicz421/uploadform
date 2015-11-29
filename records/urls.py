@@ -21,4 +21,5 @@ from rhymis import views
 urlpatterns = [
     url(r'^$', views.index_view, name='index'),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^records/list-identifier/$', views.change_records, name='change_records')
 ]

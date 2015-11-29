@@ -1,6 +1,9 @@
 from django.db import models
 from datetime import datetime
 
+class RecordNumber(models.Model):
+    pass
+    
 class Record(models.Model):
     
     CENTERS = (
@@ -14,3 +17,5 @@ class Record(models.Model):
     locationText = models.CharField(max_length='30', choices=CENTERS, default='OT')
     youthNameText = models.TextField(default='')
     notesText = models.TextField(default='')
+    recordNumberText = models.ForeignKey(RecordNumber, default=None)
+    

@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from rhymis.models import Record
+from rhymis.models import Record, RecordNumber
 
 # Create your views here.
+
+#Index: display all of your records
 def index_view(request):
     
     record = Record()
@@ -10,15 +12,18 @@ def index_view(request):
     record.locationText = request.POST.get('location_text', '')
     record.youthNameText = request.POST.get('youth_name_text', '')
     record.notesText = request.POST.get('notes_text', '')
+    
+    record_number = RecordNumber.objects.create()
+    record.recordNumberText = record_number
         
     if request.method == 'POST':
         record.save()
-        return redirect('/')
+        return redirect('/records/list-identifier/')
 
     records = Record.objects.all()
     return render(request, 'index.html', {'records': records})
-        #'date_time_text': (record.datetimeText if record.datetimeText is not None else ''),
-       # 'location_text': record.locationText,
-      #  'youth_name_text': record.youthNameText,
-     #   'notes_text': record.notesText
-    #})       
+    
+#Change record action - to redirect after POST    
+def change_records(request):
+    records = Record.objects.all()
+    return render(request, 'index.html', {'records': records})
