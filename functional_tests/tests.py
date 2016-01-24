@@ -1,5 +1,6 @@
 from selenium import webdriver
 from django.test import LiveServerTestCase
+from rhymis.models import Record, RecordNumber
 
 #from selenium.webdriver.common.keys import Keys
 
@@ -33,38 +34,53 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertIn(youthNameText, [row.text for row in rows])
         self.assertIn(notesText, [row.text for row in rows])
         
-
-    def test_right_title(self):
+    def test_make_sure_home_page_lists_links_to_all_of_the_records(self):
         #Of course, let's make sure that Issue Tracker appears in the title.
         self.browser.get(self.live_server_url)
         self.assertIn('Issue Tracker', self.browser.title)
         
         #Then, we will make sure that there's a header with that information
         header_text = self.browser.find_element_by_tag_name('h1').text
-        self.assertIn('My Issue Tracker', header_text)
+        self.assertIn('Pick a Record', header_text)
         
-        #She sees a table with headers labeled: 
-        table = self.browser.find_element_by_id('id_table')
-        headers = table.find_elements_by_tag_name('th')
+        #Major reworking of the site.
+        #I want to see a list of all the tables (records) with hyperlinks
+        #to each one.
         
-        #   - Date (date field)
-        #   - Time (date field)
-        #   - Location (text field; 50 chars max)
-        #   - Youth Name (text field; 50 chars max)
-        #   - Notes (text field; 500 chars max)
-        self.assertTrue(any(header.text == 'Date' for header in headers))
-        self.assertTrue(any(header.text == 'Location' for header in headers))
-        self.assertTrue(any(header.text == 'Youth Name' for header in headers))
-        self.assertTrue(any(header.text == 'Notes' for header in headers))
+        #start out with 0 ?
+        numbers_record = RecordNumber.objects.count()
+        if numbers_record != 0:
+            #List a url with the count
+            for i in range(numbers_record) + 1:
+                bullets = self.browser.find_elements_by_tag_name('ul')
+                self.assertTrue(any(bullet.text == str(i) for bullet in bullets))
+            else:
+                self.assertEqual(numbers_record, 0)
         
-        #She also sees blank fields below the header ready to populate the table
+        #now click on each one
+        #implement later
+        links = self.browser.find_elements_by_tag_name('a')
+        
+        
+        #click to do a new record
+        self.assertTrue(any(link.text == 'New Table' for link in links))
+        self.browser.find_element_by_id('new_table').click()
+        
+        #make sure you are in the new record page
+        current_url = self.browser.current_url
+        self.assertIn('/records/new', current_url)
+        
+        #make sure the record number is included in the heading
+        heading = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn(str(numbers_record + 1), heading)
+        
+        #now submit a record in the table and see what happens
         inputDateTime = self.browser.find_element_by_id('id_date_time')
         inputLocation = self.browser.find_element_by_id('id_location')
         inputYouthName = self.browser.find_element_by_id('id_youth_name')
         inputNotes = self.browser.find_element_by_id('id_notes')
         
         submitButton = self.browser.find_element_by_id('id_submit')
-        
         
         gmt5 = GMT5()
         
@@ -75,97 +91,56 @@ class NewVisitorTest(LiveServerTestCase):
         
         row_text = [str(dateTimeText), locationText, youthNameText, notesText]
         
-       # Grazyna came crying after her cajun-style grilled cheese sandwich 
-        #with red peppers and stuffed portabello mushroom turned out slightly
-        #burnt. New grilled cheese was issued. Issue resolved.
-        #'''
-        
         inputDateTime.send_keys(str(dateTimeText))
         inputLocation.send_keys(locationText)
         inputYouthName.send_keys(youthNameText)
         inputNotes.send_keys(notesText)
-
-        # For now she types in enter in the notes box to send the information
-        # Later, there will be a submit button once we get to forms
-
+        
         submitButton.click()
         
-        user1_list_url = self.browser.current_url
-        self.assertRegex(user1_list_url, '/records/.+', 'Actual url was %s' % user1_list_url)
+        #ok, we've sent the first record. now, verify that record is up and running
+        records = self.browser.find_elements_by_id('td')
+        self.assertTrue(any(record.text == locationText) for record in records)
+        self.assertTrue(any(record.text == youthNameText) for record in records)
+        self.assertTrue(any(record.text == notesText) for record in records)
+        self.assertTrue(any(record.text == dateTimeText) for record in records)
         
-        time.sleep(1)
-
-        #The first case now appears in the table
-        # Test to make sure info was submitted 
-        self.check_for_row_in_table(row_text)
-        
-        #Test second item -- see need for refactor?
         inputDateTime = self.browser.find_element_by_id('id_date_time')
         inputLocation = self.browser.find_element_by_id('id_location')
         inputYouthName = self.browser.find_element_by_id('id_youth_name')
         inputNotes = self.browser.find_element_by_id('id_notes')
         
         submitButton = self.browser.find_element_by_id('id_submit')
-        dateTimeText = datetime.datetime(2020, 12, 31, 23, 1, tzinfo=gmt5)
-        locationText = 'The Beach'
-        youthNameText = 'No Homeless Youth'
-        notesText = 'Happy New Year'
+        
+        
+        datetimeText = datetime.datetime(2016, 1, 18, 12, 00, tzinfo=gmt5)
+        locationText = 'Asd'
+        youthNameText = 'Name'
+        notesText = 'Just writing some notes here'
+        
         inputDateTime.send_keys(str(dateTimeText))
         inputLocation.send_keys(locationText)
         inputYouthName.send_keys(youthNameText)
         inputNotes.send_keys(notesText)
+        
         submitButton.click()
         
-        time.sleep(1)
+        records = self.browser.find_elements_by_id('td')
+        self.assertTrue(any(record.text == locationText) for record in records)
+        self.assertTrue(any(record.text == youthNameText) for record in records)
+        self.assertTrue(any(record.text == notesText) for record in records)
+        self.assertTrue(any(record.text == dateTimeText) for record in records)
         
-        row_text = [str(dateTimeText), locationText, youthNameText, notesText]
-        self.check_for_row_in_table(row_text)
-        
-        #Second user comes along
-        self.browser.quit()
-        self.browser = webdriver.Firefox()
-        
-        self.browser.get(self.live_server_url)
-        body_text = self.browser.find_element_by_tag_name('body').text
-        self.assertNotIn(locationText, body_text)
-        self.assertNotIn(youthNameText, body_text)
-        self.assertNotIn(notesText, body_text)
-        
-        dateTimeText = datetime.datetime(2013, 5, 4, 14, 21, tzinfo=gmt5)
-        locationText = 'OLQP'
-        youthNameText = 'Emilka and Przemek'
-        notesText = 'Most beautiful day ever'
-        
-        row_text = [str(dateTimeText), locationText, youthNameText, notesText]
-        
-       # Grazyna came crying after her cajun-style grilled cheese sandwich 
-        #with red peppers and stuffed portabello mushroom turned out slightly
-        #burnt. New grilled cheese was issued. Issue resolved.
-        #'''
-        
-        # Convert to this format 'Nov. 21, 2015, 10:21 a.m.'
-
-        inputDateTime.send_keys(str(dateTimeText))
-        inputLocation.send_keys(locationText)
-        inputYouthName.send_keys(youthNameText)
-        inputNotes.send_keys(notesText)
-
-        # For now she types in enter in the notes box to send the information
-        # Later, there will be a submit button once we get to forms
-
-        submitButton.click()
-        
-        self.check_for_row_in_table(row_text)
-        
-        user2_list_url = self.browser.current_url
-        self.assertRegex(user2_list_url, '/records/.+', 'Actual url was %s' % user2_list_url)
-        self.assertNotEqual(user2_list_url, user1_list_url)
-        
-        self.fail('Finish the test')
-        
-#Done for now
 class GMT5(datetime.tzinfo):
     def utcoffset(self, dt):
         return datetime.timedelta(hours=5)
     def dst(self, dt):
-        return datetime.timedelta(0)
+        return datetime.timedelta(0)        
+                
+        
+        
+        #She sees a table with headers labeled: 
+        # self.assertEqual(self.live_server_url, self.webdriver.getCurrentUrl())
+    
+       
+      

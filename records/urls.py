@@ -19,7 +19,12 @@ from django.contrib import admin
 from rhymis import views
 
 urlpatterns = [
-    url(r'^$', views.index_view, name='index'),
+    url(r'^$', views.index_view, name='index'),  #Index
+    url(r'^records/new$', views.newrecord, name='newrecord'), #New Record
+    url(r'^records/new/process$', views.processrecord, name='processrecord'), #Process a New Record
+    url(r'^records/view$', views.viewrecords, name='viewrecords'), #View All Records 
+    url(r'^records/view/(?P<field>youth|location|staff)/(?P<keyword>\w+)$', views.viewrecords, name='viewrecords'), #View Some Records by Field and Keyword
+    url(r'^records/view/(?P<field>date)/(?P<keyword>\d+\/\d+\/\d+)$', views.viewrecords, name='viewrecords'), #View Records By Date
+    url(r'^records/delete/(\d+)$', views.deleterecord, name='deleterecord'), #Delete Record 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^records/list-identifier/$', views.change_records, name='change_records')
 ]

@@ -1,0 +1,28 @@
+<html>
+    <head>
+        <title>Issue Tracker</title>
+    </head>
+    <body>
+        <h1>Record </h1>
+        
+        <table id="id_table">
+            <tr>
+                <th>Date</th>
+                <th>Location</th>
+                <th>Youth Name</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <form method="POST" action="/">
+                <td><input name="date_time_text" id="id_date_time" /></td>
+                <td><input name="location_text" id="id_location" /></td>
+                <td><input name="youth_name_text" id="id_youth_name" /></td>
+                <td><input name="notes_text" id="id_notes" /></td>
+                <td><input type="submit" value="Submit" id="id_submit" /></td>
+                {% csrf_token %}
+                </form>
+            </tr>
+
+        </table>
+    </body>
+</html>

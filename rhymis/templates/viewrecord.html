@@ -1,0 +1,48 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  
+<script>
+  $(document).ready(function() {
+    $("#id_date_time").datepicker();
+  });
+</script>
+<html>
+    <head>
+        <title>View Records</title>
+    </head>
+    <body>
+        <h1>{{ message }}</h1>
+        <table id="id_table">
+            <tr>
+                <th>Date</th>
+                <th>Location</th>
+                <th>Staff Name</th>
+                <th>Youth Name</th>
+                <th>Notes</th>
+            </tr>
+            {% for record in records %}
+            <tr>
+                <td><a href="/records/view/date/{{ record.datetimeText }}">{{ record.datetimeText }}</a></td>
+                <td><a href="/records/view/location/{{ record.locationText.locationName }}">{{ record.locationText.locationName}}</a></td>
+                <td><a href="/records/view/staff/{{ record.staffText }}">{{ record.staffText }}</a></td>
+                <td><a href="/records/view/youth/{{ record.youthNameText }}">{{ record.youthNameText }}</a></td>
+                <td>{{ record.notesText }}</td>
+                <td><a href="/records/delete/{{ record.id }}">Delete</a></td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <form method="POST" action="/records/new/process">
+                <td><input name="date_time_text" id="id_date_time" /></td>
+                <td><input name="location_text" id="id_location" /></td>
+                <td><input name="staff_text" id="id_staff" /></td>
+                <td><input name="youth_name_text" id="id_youth_name" /></td>
+                <td><input name="notes_text" id="id_notes" /></td>
+                <td><input type="submit" value="Submit" id="id_submit" /></td>
+                {% csrf_token %}
+                </form>
+            </tr>
+        </table>
+        <br><a href="/records/view" id='viewrecord'>View All Records</a>
+        <br><a href='/'>Home</a>
+    </body>
+</html>

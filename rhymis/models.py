@@ -1,21 +1,12 @@
 from django.db import models
 from datetime import datetime
 
-class RecordNumber(models.Model):
-    pass
+class Location(models.Model):
+    locationName = models.TextField(max_length='45', default='')
     
-class Record(models.Model):
-    
-    CENTERS = (
-    ('WP', 'Woodberry Park'),
-    ('GB', 'Gates of Ballston'),
-    ('FH', 'Fort Henry'),
-    ('OT', 'Other'),
-    )
-    
-    datetimeText = models.DateTimeField('date and time case opened', default=None, null=True, blank=True)
-    locationText = models.CharField(max_length='30', choices=CENTERS, default='OT')
+class Record(models.Model):    
+    datetimeText = models.TextField(max_length='30')
+    staffText = models.TextField(default='')
+    locationText = models.ForeignKey(Location, default=None, on_delete=models.CASCADE)
     youthNameText = models.TextField(default='')
     notesText = models.TextField(default='')
-    recordNumberText = models.ForeignKey(RecordNumber, default=None)
-    

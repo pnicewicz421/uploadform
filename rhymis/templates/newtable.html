@@ -1,0 +1,32 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  
+<script>
+  $(document).ready(function() {
+    $("#id_date_time").datepicker();
+  });
+</script>
+
+<html>
+    <head>
+        <title>Add a Location</title>
+    </head>
+    <body>
+        <h1>Add a Location</h1>
+        
+        <table id="id_table">
+            <tr>
+                <th>New Location Name</th>
+            </tr>
+            <tr>
+                <form method="POST" action="/records/{{ tablenumber.id }}/add_record">
+                <td><input name="location_text" id="id_location" /></td>
+                <td><input type="submit" value="Submit" id="id_submit" /></td>
+                {% csrf_token %}
+                </form>
+            </tr>
+
+        </table>
+        <a href='../../'>Table list</a>
+    </body>
+</html>
