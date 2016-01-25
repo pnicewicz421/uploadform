@@ -1,18 +1,29 @@
-<html>
-    <head>
-        <title>Record Tracker</title>
-    </head>
-    <body>
-        <h1>Record Tracker</h1>
-        {% for location in locations %}
-        <a href="records/view/location/{{ location.locationName }}" id='{{ location.locationName }}'>{{ location.locationName }}</a>
-        <br>
-        {% endfor %}
-        <a href="records/view" id='viewrecord'>View All Records</a>
-        <br><a href="records/new" id='newrecord'>Add a New Record</a>
-    
+{% extends 'base.html' %}
 
-        </table>
-    </body>
-    
-</html>
+{% block title %}Record Tracker{% endblock %}
+
+{% block calendar_script %}{% endblock %}
+
+{% block header_text %}Record Tracker{% endblock %}
+
+        {% block table_header %}
+        {% endblock %}
+
+        {% block location_list %}
+            {% for location in locations %}
+            <a href="records/view/location/{{ location.locationName }}" id='{{ location.locationName }}'>{{ location.locationName }}</a>
+            <br>
+            {% endfor %}
+        {% endblock %}
+        
+        {% block new_input %}
+        {% endblock %}
+        
+        {% block end_table %}
+        {% endblock %}
+        
+        {% block add_records %}<br><a href="records/new" id='newrecord'>Add a New Record</a>{% endblock %}
+        
+        {% block home_link %}{% endblock %}
+        
+      

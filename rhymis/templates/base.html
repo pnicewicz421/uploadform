@@ -1,0 +1,73 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">-->
+        <title>{% block title %}{% endblock %}</title>
+        <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">  
+        <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>-->
+        <!--<script src="js/bootstrap.min.js"></script>-->
+        {% block calendar_script %}
+            <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+            <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+            <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+            <!--<link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">-->
+            <script>
+            $(function() {
+                $( "#id_date_time" ).datepicker();
+            });
+            </script>
+        {% endblock %}
+    </head>
+    <body>
+        <h1>{% block header_text %}{% endblock %}</h1>
+        
+        {% block table_header %}
+        <table id="id_table">
+            <tr>
+                <th>Date</th>
+                <th>Location</th>
+                <th>Staff Name</th>
+                <th>Youth Name</th>
+                <th>Notes</th>
+            </tr>
+        {% endblock %}
+        
+        {% block location_list %}
+        {% endblock %}
+        
+        {% block list_records %}
+        {% endblock %}
+        
+        {% block new_input %}
+        <tr>
+            <form method="POST" action="/records/new/process">
+                <td><input name="date_time_text" id="id_date_time" /></td>
+                <td><input name="location_text" id="id_location" /></td>
+                <td><input name="staff_text" id="id_staff" /></td>
+                <td><input name="youth_name_text" id="id_youth_name" /></td>
+                <td><input name="notes_text" id="id_notes" /></td>
+                <td><input type="submit" value="Submit" id="id_submit" /></td>
+                {% csrf_token %}
+            </form>
+        </tr>
+        {% endblock %}
+        
+        {% block end_table %}
+        </table>
+        {% endblock %}
+        
+        {% block view_records %}
+        <a href="/records/view" id='viewrecord'>View All Records</a>
+        {% endblock %}
+        
+        {% block add_records %}
+        {% endblock %}
+        
+        {% block home_link %}<br><a href='/'>Home</a>{% endblock %}
+        
+        <script src="/static/app.js"></script>
+          
+    </body>
+    
+</html>
