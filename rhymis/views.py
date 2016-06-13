@@ -1,7 +1,14 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from rhymis.models import Record, Location
+
+from .forms import UploadFileForm
+from rhymis.models import Record, Location, Document
+
 from urllib.parse import urlparse
+
+#from somewhere import handle_uploaded_file 
+    #-- we will develop this function to process the file
+
 
 # Create your views here.
 
@@ -63,3 +70,24 @@ def deleterecord(request, recordid):
         return redirect('/')
     record.delete()
     return redirect(referpath)
+    
+def upload_file(request):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES) #form
+        if form.is_valid():
+            #save the file into the database 
+            filename = Document(filename = request.FILES['filename'])
+            filename.save()
+            html = '<html><body>The form was not valid. Form was %s. Filename was %s (model). finally, in the post request. Request.FILES[\'filename\'] was %s </body></html>' % (form, filename, request.FILES['filename'])
+            return HttpResponse(html)
+        else:
+            form = UploadFileForm() #empty, unbound form
+            
+        files = Document.objects.all()
+                
+        html = '<html><body>The form was not valid. Form was %s. Files: %s</body></html>' % (form, files)
+        return HttpResponse(html)
+    else:
+        html = '<html><body>GET request</body></html>'
+        return HttpResponse(html)
+    

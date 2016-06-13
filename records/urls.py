@@ -26,5 +26,6 @@ urlpatterns = [
     url(r'^records/view/(?P<field>youth|location|staff)/(?P<keyword>\w+)$', views.viewrecords, name='viewrecords'), #View Some Records by Field and Keyword
     url(r'^records/view/(?P<field>date)/(?P<keyword>\d+\/\d+\/\d+)$', views.viewrecords, name='viewrecords'), #View Records By Date
     url(r'^records/delete/(\d+)$', views.deleterecord, name='deleterecord'), #Delete Record 
+    url(r'^records/upload$', views.upload_file, name='uploadfile'), #Upload File
     url(r'^admin/', include(admin.site.urls)),
 ]

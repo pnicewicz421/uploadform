@@ -69,6 +69,9 @@ TEMPLATES = [
     },
 ]
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'files') #specify where uploaded files will be placed
+MEDIA_URL = '/files/'
+
 WSGI_APPLICATION = 'records.wsgi.application'
 
 
