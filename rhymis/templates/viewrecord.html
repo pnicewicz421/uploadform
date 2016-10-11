@@ -6,13 +6,19 @@
 
 {% block list_records %}
             {% for record in records %}
-            <tr>
-                <td><a href="/records/view/date/{{ record.datetimeText }}">{{ record.datetimeText }}</a></td>
-                <td><a href="/records/view/location/{{ record.locationText.locationName }}">{{ record.locationText.locationName}}</a></td>
-                <td><a href="/records/view/staff/{{ record.staffText }}">{{ record.staffText }}</a></td>
-                <td><a href="/records/view/youth/{{ record.youthNameText }}">{{ record.youthNameText }}</a></td>
-                <td>{{ record.notesText }}</td>
-                <td><a href="/records/delete/{{ record.id }}">Delete</a></td>
+            <tr class="trow">
+                <td class="field"><a href="/records/view/date/{{ record.datetimeText }}">{{ record.datetimeText }}</a></td>
+                <td class="field"><a href="/records/view/location/{{ record.locationText.locationName }}">{{ record.locationText.locationName}}</a></td>
+                <td class="field"><a href="/records/view/staff/{{ record.staffText }}">{{ record.staffText }}</a></td>
+                <td class="field"><a href="/records/view/youth/{{ record.youthNameText }}">{{ record.youthNameText }}</a></td>
+                <td class="field">{{ record.notesText }}</td>
+                <td class="delete"><a href="/records/delete/{{ record.id }}">Delete</a></td>
+                <td><a class="edit" id="edit{{ record.id }}">Edit</a></td>
             </tr>
             {% endfor %}
+            <!-- Editing option in jquery-->
+            {% load static %}
+            <script src="{% static "js/inlineedit.js" %}"></script>
+
 {% endblock %}
+

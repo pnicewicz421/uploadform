@@ -28,7 +28,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -41,9 +40,39 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rhymis',
     'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.linkedin',
+    'allauth.socialaccount.providers.twitter',
 )
 
-SITE_ID = 1 
+
+
+
+SITE_ID = 3 # This should be set to facebook
+
+
+#LOGIN_REDIRECT_URL = '/'
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_PROVIDERS = { 
+    'facebook': { 
+        'SCOPE': ['email'],
+        'METHOD': 'oauth2',
+        }, 
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': { 'access_type': 'online' } 
+        }
+    }
+
+ACCOUNT_AUTHENITICATION_METHOD = "username"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "optional"
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "[q4ts]"
+ACCOUNT_PASSWORD_MIN_LENGTH = 6 
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -58,17 +87,27 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'records.urls'
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    'records/templates/registration',
+
+AUTHENTICATION_BACKENDS = (
+        #Needed to login by username in Django admin, regardless of 'allauth'
+        'django.contrib.auth.backends.ModelBackend',
+        
+        #allauth specific auth methods, such as login by email
+        'allauth.account.auth_backends.AuthenticationBackend',
 )
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.core.context_processors.request",
+    "django.contrib.auth.context_processors.auth",
+    "allauth.account.context_processors.account",
+    "allauth.socialaccount.context_processors.socialaccount",
+)
+
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['records/templates/registration'],
+        'DIRS': ['/records/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -76,6 +115,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+               # 'allauth.account.context_processors.account',
+               # 'allauth.socialaccount.context_processors.socialaccount',
             ],
         },
     },
@@ -121,4 +162,3 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
-LOGIN_URL = '/'

@@ -1,9 +1,11 @@
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
         <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">-->
         <title>{% block title %}{% endblock %}</title>
+        <link href="/static/css/style.css" rel="stylesheet">
         <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">  
         <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>-->
         <!--<script src="js/bootstrap.min.js"></script>-->
@@ -20,9 +22,23 @@
         {% endblock %}
     </head>
     <body>
+       {% block userauth %}
+       {% if user.is_authenticated %}
+            <a href="/logout/">Logout</a>
+            {% if user.first_name or user.last_name %}
+                {{ user.first_name }} {{ user.last_name }}
+            {% else %}
+                {{ user.username }}
+            {% endif %}
+        {% else %}
+            <a href="/login/">Login</a>
+        {% endif %}
+        {% endblock %}
+        <br>
         <h1>{% block header_text %}{% endblock %}</h1>
         
         {% block table_header %}
+        <form method="POST" action="/records/new/process" name="records" id="recordsform">
         <table id="id_table">
             <tr>
                 <th>Date</th>
@@ -40,8 +56,7 @@
         {% endblock %}
         
         {% block new_input %}
-        <tr>
-            <form method="POST" action="/records/new/process">
+        <tr id="addNewValue">
                 <td><input name="date_time_text" id="id_date_time" /></td>
                 <td><input name="location_text" id="id_location" /></td>
                 <td><input name="staff_text" id="id_staff" /></td>
@@ -49,21 +64,12 @@
                 <td><input name="notes_text" id="id_notes" /></td>
                 <td><input type="submit" value="Submit" id="id_submit" /></td>
                 {% csrf_token %}
-            </form>
         </tr>
         {% endblock %}
         
-        {% block file_input %}
-        <table id="file to upload">
-        <tr>
-            File to Upload
-        </tr>
-
-        </table>
-        {% endblock %}
         
         {% block end_table %}
-        </table>
+        </table></form>
         {% endblock %}
         
         {% block view_records %}
@@ -71,6 +77,12 @@
         {% endblock %}
         
         {% block add_records %}
+        {% endblock %}
+        
+        {% block file_input %}
+        {% endblock %}
+        
+        {% block login %}
         {% endblock %}
         
         {% block home_link %}<br><a href='/'>Home</a>{% endblock %}

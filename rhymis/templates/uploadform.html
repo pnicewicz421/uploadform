@@ -40,7 +40,7 @@
         {% endif %}
         
         <tr>
-         File to Upload    
+         <b> Upload More Files </b>
          </tr>
             <form method="POST" action="/records/upload" enctype="multipart/form-data">
                  {% csrf_token %}
@@ -49,7 +49,6 @@
                  <p>
                     {{ form.filename.errors }}
                     {{ form.filename }}
-                    {{ form }]
                 </p>
                <!-- <td><input name="filename" id="id_filename" /></td>-->
                <!-- <input type="file" name="fileupload" /> -->

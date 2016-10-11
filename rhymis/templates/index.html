@@ -4,28 +4,54 @@
 
 {% block calendar_script %}{% endblock %}
 
+
+{% if user.is_autheniticated %}
+            <a href="/logout/">Logout</a>
+            {% if user.first_name or user.last_name %}
+                {{ user.first_name }} {{ user.last_name }}
+            {% else %}
+                {{ user.username }}
+            {% endif %}
+{% else %}
+            <a href="/login/">Login</a>
+{% endif %}
+
 {% block header_text %}Record Tracker{% endblock %}
 
         {% block table_header %}
         {% endblock %}
 
         {% block location_list %}
-            {% for location in locations %}
-            <a href="records/view/location/{{ location.locationName }}" id='{{ location.locationName }}'>{{ location.locationName }}</a>
-            <br>
-            {% endfor %}
+            {% if user.is_authenticated %}
+                {% for location in locations %}
+                <a href="records/view/location/{{ location.locationName }}" id='{{ location.locationName }}'>{{ location.locationName }}</a>
+                <br>
+                {% endfor %}
+            {% endif %}
+                
         {% endblock %}
         
         {% block new_input %}
         {% endblock %}
-
         
         {% block end_table %}
         {% endblock %}
         
-        {% block add_records %}<br><a href="records/new" id='newrecord'>Add a New Record</a>{% endblock %}
+        {% block add_records %}<br><a href="records/signup" id='signup'>Sign up</a><br><a href="records/new" id='newrecord'>Add a New Record</a>{% endblock %}
+        
+        {% block file_input %}<br><a href="records/upload" id='upload'>Upload a File</a>{% endblock %}
+        
+        {% block login %}
+            <br>
+            <a>Sign Up</a><br>
+            <a href="{% url 'account_login' %}">Log in</a><br>
+            Sign Up / Login with Facebook
+            <br>
+            Sign Up / Login with Google
+        {% endblock %}
         
         {% block home_link %}{% endblock %}
+        
         
         
       
