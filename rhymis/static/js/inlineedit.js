@@ -104,15 +104,18 @@ $(document).ready(function() {
 
     					//$('#editfield' + parseInt(key)).html('<a href="/records/view/' + String(valPropName[key]) + '">' + String(json[key]) +'</a>');
     					
-    					$('<a href="/records/view/' + String(valPropName[key]) + '">' + String(json[key]) +'</a>').appendTo(nextTd);
-    					var nextTd = nextTd.next('td')	
+    					//$('<a href="/records/view/' + String(valPropName[key]) + '">' + String(json[key]) +'</a>').appendTo(nextTd);
+    					//change to nextTd.html
+    					nextTd.html($('<a href="/records/view/' + String(valPropName[key]) + '">' + String(json[key]) +'</a>'));
+    					var nextTd = nextTd.next('td');
 
     				} else if (key == 4) {
     					console.log('I reached 4')
     					console.log(json[key])
     					//nextTd is prepped for the last one so that it can just populate it 
 
-    					$(json[key]).appendTo(nextTd);
+    					nextTd.html(json[key]);
+    					//$(json[key]).appendTo(nextTd);
     					//$('#editfield' + parseInt(key)).html(json[key]);	
     				}
     			//replace the buttons
